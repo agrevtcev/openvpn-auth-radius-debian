@@ -1,0 +1,20 @@
+The upstream source provides no way to extend the CFLAGS by -g which is needed
+for building the debug package. So instead of setting the variables, we add to
+them.
+--- a/Makefile
++++ b/Makefile
+@@ -9,10 +9,10 @@
+ 
+ 
+ 
+-INCL=
+-LDFLAGS=
+-LIBS=-lgcrypt -lpthread
+-CFLAGS=-Wall -shared -fPIC -DPIC
++INCL +=
++LDFLAGS +=
++LIBS += -lgcrypt -lpthread
++CFLAGS += -Wall -shared -fPIC -DPIC
+ 
+ 
+ PLUGIN=radiusplugin.so

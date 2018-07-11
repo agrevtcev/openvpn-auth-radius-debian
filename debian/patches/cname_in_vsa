@@ -1,0 +1,36 @@
+--- a/UserAuth.cpp
++++ b/UserAuth.cpp
+@@ -58,7 +58,9 @@
+ 				ra7(ATTRIB_NAS_Port_Type),
+ 				ra8(ATTRIB_Service_Type),
+ 				ra9(ATTRIB_Framed_IP_Address),
+-				ra10(ATTRIB_Acct_Session_ID, this->getSessionId());
++				ra10(ATTRIB_Acct_Session_ID, this->getSessionId()),
++				ra11(ATTRIB_Vendor_Specific);
++        RadiusVendorSpecificAttribute rvsa;
+ 	
+ 	
+ 	if (DEBUG (context->getVerbosity()))
+@@ -148,7 +150,21 @@
+ 			}
+ 	}
+ 	
+-	
++	if(this->getCommonname().compare("") != 0)
++	{
++			rvsa.setId(27340); //VENDOR	OpenVPN	27340
++			rvsa.setType(1); //ATTRIBUTE OpenVPN-Cn	1	string
++			rvsa.setValue(this->getCommonname().c_str());
++			Octet * tmp_rvsa=new Octet[rvsa.getLength()+4];
++			rvsa.getShapedAttribute(tmp_rvsa);
++			ra11.setValue((char *)tmp_rvsa);
++			if (packet.addRadiusAttribute(&ra11))
++			{
++				cerr << getTime() << "RADIUS-PLUGIN: Fail to add attribute OpenVPN-Cn.\n";
++			}
++			delete [] tmp_rvsa;
++	}
++
+ 	
+ 	if (DEBUG (context->getVerbosity()))
+ 		cerr << getTime() << "RADIUS-PLUGIN: Send packet to " << server->getName().c_str() <<".\n";
